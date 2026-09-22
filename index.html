@@ -365,13 +365,24 @@ footer nav{display:flex;gap:18px;flex-wrap:wrap}
       <div class="k">07 · What shipped</div>
       <div>
         <h2>Three paying clients on their own domains.</h2>
-        <p>Each moved from a GitHub Pages preview to the client's domain on Cloudflare Pages, with call and text click tracking (a Worker writing to D1), a monthly plain-English value report, and a Stripe subscription.</p>
+        <p>Each moved from a GitHub Pages preview to the client's domain on Cloudflare Pages, with click tracking on every call, text, email and social button, a monthly plain-English value report, and a Stripe subscription.</p>
       </div>
     </div>
     <div class="clients">
       <a class="client" href="https://xlawncare.com/"><div class="im"><img src="img/site-xlawncare.jpg" alt="X Lawn Care website hero" loading="lazy" width="1440" height="900"></div><div class="t"><b>X Lawn Care</b><span>xlawncare.com · Newberry, SC</span><em>Closed on a phone call. The format that produced the pipeline's strongest buying signal: benefit-led headings, call-or-text buttons, no forms.</em></div></a>
       <a class="client" href="https://semo-lawn-care.com/"><div class="im"><img src="img/site-semo.jpg" alt="SEMO Lawn Care website hero" loading="lazy" width="1440" height="900"></div><div class="t"><b>SEMO Lawn Care</b><span>semo-lawn-care.com · Sikeston, MO</span><em>Found, built and pitched by the agents; the owner's first reply asked what it would cost. Closed by email, eight site versions since.</em></div></a>
       <a class="client" href="https://rendonphotography.com/"><div class="im"><img src="img/site-rendon.jpg" alt="Rendon Photography website hero" loading="lazy" width="1440" height="900"></div><div class="t"><b>Rendon Photography</b><span>rendonphotography.com · Newberry, SC</span><em>Client-supplied photos, a gallery with lightbox, seven versions as the owner's feedback came in.</em></div></a>
+    </div>
+    <div class="grid" style="margin-top:28px">
+      <ul class="pts side" style="padding:0">
+        <li><b>After the sale, the site reports on itself.</b> A snippet on each client site beacons call, text, email and social clicks to a Cloudflare Worker that writes to D1; visitor-days come from the same beacon.</li>
+        <li><b>30 CTA clicks and 381 visitor-days</b> across the three sites since tracking began in August. The monthly value report reads this table and the zone analytics, then drafts the client a plain-English email of what the site did.</li>
+        <li><b>Honest metrics by construction.</b> The visitor id rotates daily, so the dashboard counts visitor-days and says so, rather than claiming unique visitors it cannot know.</li>
+      </ul>
+      <div>
+        <div class="shot"><img src="img/cta.jpg" alt="AWB CTA dashboard: visitors today, clicks today, total clicks; a daily line chart of visitors and clicks since August; and a per-site table for rendon, semo and xlawncare" loading="lazy" width="1800" height="1095"></div>
+        <div class="cap"><b>CTA dashboard</b> (Cloudflare Worker + D1). Visitors and click-through per client site, the numbers behind each monthly value report.</div>
+      </div>
     </div>
     <div class="callout"><b>1,580 preview sites are live right now.</b> <a href="https://felixchenyijun.github.io/websites/directory/">Browse the directory ↗</a> or open one at random, for example <a href="https://falconwebstudio.com/websites/pristine-lawns-beachwood/">pristine-lawns-beachwood ↗</a>. Each was built, machine-reviewed and deployed by the agents; I spot-check a site before it is pitched.</div>
   </div>

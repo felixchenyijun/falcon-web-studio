@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Falcon Web Studio — three AI agents that find, build and sell websites</title>
+<meta name="description" content="A production multi-agent pipeline by Felix Chen: Finder, Builder and Sales agents on one MorphDB backend. 1,582 sites built, 3 paying clients.">
+<meta property="og:title" content="Falcon Web Studio — AI agents that find, build and sell websites">
+<meta property="og:description" content="1,731 leads qualified, 1,582 sites built, 813 owners contacted, 3 paying clients. How it works, what was hard, what shipped.">
+<meta property="og:image" content="https://felixchenyijun.github.io/falcon-web-studio/img/overview.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F3F5F1; --card:#FFFFFF; --ink:#12171B; --ink2:#39434B; --mute:#6A747C;
+  --rule:#D6DCD4; --green:#1C5A3A; --green2:#2E7A52; --green-soft:#E2EDE5;
+  --amber:#B06A12; --amber-soft:#F6EBDD; --navy:#0B0E14;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --w:1120px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 var(--body);-webkit-font-smoothing:antialiased}
+a{color:var(--green);text-decoration:none;border-bottom:1px solid rgba(28,90,58,.35)}
+a:hover{border-bottom-color:var(--green)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+img{max-width:100%;height:auto;display:block}
+.wrap{max-width:var(--w);margin:0 auto;padding:0 24px}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:5;background:rgba(243,245,241,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:56px}
+.wordmark{white-space:nowrap;font-family:var(--display);font-weight:800;font-size:18px;letter-spacing:-.01em;color:var(--ink);border:0;display:flex;align-items:center;gap:10px}
+.wordmark i{width:22px;height:22px;display:inline-block}
+.top nav{display:flex;gap:22px;font-size:14px}
+.top nav a{border:0;color:var(--ink2);white-space:nowrap}
+.top nav a:hover{color:var(--green)}
+@media (max-width:640px){.top nav{gap:14px;font-size:13px}.top nav a.opt{display:none}.wordmark{font-size:16px}}
+
+/* hero */
+.hero{padding:72px 0 40px}
+.hero .eyebrow{margin-bottom:18px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(34px,5.4vw,66px);line-height:1.02;letter-spacing:-.025em;margin:0 0 22px;max-width:15ch}
+h1 em{font-style:normal;color:var(--green)}
+.lede{font-size:19px;line-height:1.55;max-width:60ch;color:var(--ink2);margin:0 0 40px}
+.lede b{color:var(--ink);font-weight:600}
+
+/* the ledger — the signature element */
+.ledger{display:grid;grid-template-columns:repeat(5,1fr);border-top:1.5px solid var(--ink);border-bottom:1px solid var(--rule);margin:0 0 44px}
+.ledger>div{padding:18px 16px 16px 0;position:relative}
+.ledger>div+div{padding-left:18px;border-left:1px solid var(--rule)}
+.ledger .n{font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,46px);line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.ledger .l{margin-top:8px}
+.ledger>div.win .n{color:var(--amber)}
+.ledger>div.win .l{color:var(--amber)}
+@media (max-width:820px){.ledger{grid-template-columns:repeat(3,1fr)}.ledger>div:nth-child(4){border-left:0;padding-left:0;border-top:1px solid var(--rule)}.ledger>div:nth-child(5){border-top:1px solid var(--rule)}}
+@media (max-width:480px){.ledger{grid-template-columns:1fr 1fr}.ledger>div:nth-child(odd){border-left:0;padding-left:0}.ledger>div:nth-child(n+3){border-top:1px solid var(--rule)}.ledger>div:nth-child(5){grid-column:span 2}}
+
+/* screenshots */
+.shot{background:var(--navy);border:1px solid #1F2732;border-radius:10px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(11,14,20,.45),0 2px 6px rgba(11,14,20,.12)}
+.shot img{width:100%}
+.cap{font-family:var(--mono);font-size:12.5px;color:var(--mute);margin:12px 2px 0;line-height:1.5}
+.cap b{color:var(--ink2);font-weight:500}
+
+/* sections */
+section{padding:64px 0 24px;border-top:1px solid var(--rule)}
+.head{display:grid;grid-template-columns:200px 1fr;gap:32px;margin-bottom:28px}
+.head .k{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--green);padding-top:10px}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(26px,3.2vw,38px);line-height:1.08;letter-spacing:-.02em;margin:0 0 14px}
+.head p{margin:0;max-width:66ch;color:var(--ink2);font-size:17px}
+.grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,9fr);gap:36px}
+.grid>.side{color:var(--ink2);font-size:15px}
+@media (max-width:820px){.head,.grid{grid-template-columns:1fr;gap:14px}.head .k{padding-top:0}}
+
+ul.pts{list-style:none;margin:0;padding:0}
+ul.pts li{position:relative;padding:0 0 0 22px;margin:0 0 10px;color:var(--ink2);font-size:15.5px}
+ul.pts li::before{content:"";position:absolute;left:0;top:11px;width:10px;height:2px;background:var(--green)}
+ul.pts b,.side b{color:var(--ink);font-weight:600}
+code{font-family:var(--mono);font-size:.88em;background:var(--green-soft);color:var(--green);padding:1px 5px;border-radius:4px}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:28px}
+@media (max-width:820px){.two{grid-template-columns:1fr}}
+
+/* agent cards */
+.agents{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0 8px}
+.agent{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:18px 18px 16px}
+.agent h3{font-family:var(--display);font-weight:700;font-size:20px;margin:0 0 4px;letter-spacing:-.01em}
+.agent .own{font-family:var(--mono);font-size:11.5px;color:var(--green);margin-bottom:10px}
+.agent p{margin:0;font-size:14.5px;color:var(--ink2);line-height:1.5}
+@media (max-width:820px){.agents{grid-template-columns:1fr}}
+
+/* diagram */
+.diagram{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:10px 12px 4px;margin-top:8px;overflow-x:auto}
+.diagram svg{width:100%;min-width:720px;height:auto;display:block}
+
+/* hard problems */
+dl.hard{margin:0;display:grid;grid-template-columns:1fr;gap:0;border-top:1px solid var(--rule)}
+dl.hard .row{display:grid;grid-template-columns:230px 1fr;gap:24px;padding:16px 0;border-bottom:1px solid var(--rule)}
+dl.hard dt{font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:-.01em;margin:0}
+dl.hard dd{margin:0;color:var(--ink2);font-size:15.5px}
+@media (max-width:820px){dl.hard .row{grid-template-columns:1fr;gap:6px}}
+
+/* clients */
+.clients{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:8px}
+.client{border:0;color:inherit;display:block;background:var(--card);border:1px solid var(--rule);border-radius:10px;overflow:hidden;transition:transform .2s ease,box-shadow .2s ease}
+.client:hover{transform:translateY(-2px);box-shadow:0 18px 40px -24px rgba(11,14,20,.5)}
+.client .im{aspect-ratio:16/10;overflow:hidden;background:#dfe5df}
+.client .im img{width:100%;height:100%;object-fit:cover;object-position:top}
+.client .t{padding:12px 14px 14px}
+.client .t b{display:block;font-family:var(--display);font-weight:700;font-size:17px}
+.client .t span{display:block;font-family:var(--mono);font-size:12px;color:var(--mute);margin-top:3px}
+.client .t em{display:block;font-style:normal;font-size:13.5px;color:var(--ink2);margin-top:6px}
+@media (max-width:820px){.clients{grid-template-columns:1fr}}
+.callout{margin-top:22px;background:var(--amber-soft);border-left:3px solid var(--amber);padding:14px 18px;border-radius:0 8px 8px 0;color:var(--ink2);font-size:15.5px}
+.callout b{color:var(--ink)}
+
+/* footer */
+footer{border-top:1.5px solid var(--ink);margin-top:56px;padding:28px 0 60px;font-size:14px;color:var(--ink2)}
+footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
+footer .stack{font-family:var(--mono);font-size:12px;color:var(--mute);line-height:1.8;max-width:64ch}
+footer nav{display:flex;gap:18px;flex-wrap:wrap}
+
+/* motion */
+.rv{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.rv{opacity:1;transform:none;transition:none}.client{transition:none}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="wordmark" href="#top" aria-label="Falcon Web Studio">
+      <i aria-hidden="true"><svg viewBox="0 0 22 22" fill="none"><path d="M2 12 C6 4, 14 3, 21 3 C18 8, 15 12, 11 13 L6 19 L7 13 Z" fill="#1C5A3A"/></svg></i>
+      Falcon Web Studio
+    </a>
+    <nav>
+      <a href="#how" class="opt">How it runs</a>
+      <a href="#hard" class="opt">Hard problems</a>
+      <a href="#shipped">Clients</a>
+      <a href="https://github.com/felixchenyijun/morphdb" class="opt">MorphDB ↗</a>
+      <a href="https://www.linkedin.com/in/felix-d-chen">Felix Chen ↗</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero" style="border-top:0">
+  <div class="wrap">
+    <div class="mono eyebrow">Falcon Web Studio · a side business run by AI agents · built and operated by Felix Chen, 2026</div>
+    <h1>Three AI agents find local businesses with no website, <em>build one, and sell it.</em></h1>
+    <p class="lede">A production multi-agent pipeline I designed, built and operate alone. <b>Finder</b>, <b>Builder</b> and <b>Sales</b> run as autonomous coding agents over one shared database and coordinate only through it. I touch the two steps that cannot be undone: sending a message and answering a reply. Every number on this page is read from the live database.</p>
+
+    <div class="ledger" aria-label="Pipeline totals">
+      <div><div class="n">3,068</div><div class="l mono">towns scanned</div></div>
+      <div><div class="n">1,731</div><div class="l mono">leads qualified</div></div>
+      <div><div class="n">1,582</div><div class="l mono">sites built &amp; deployed</div></div>
+      <div><div class="n">813</div><div class="l mono">owners contacted</div></div>
+      <div class="win"><div class="n">3</div><div class="l mono">paying clients · $175/mo</div></div>
+    </div>
+
+    <figure style="margin:0">
+      <div class="shot"><img src="img/overview.jpg" alt="Admin dashboard overview: KPI cards and a Sankey diagram tracing every lead from niche through build, human review, outreach channel and outcome" width="1800" height="1344" fetchpriority="high"></div>
+      <figcaption class="cap"><b>Admin dashboard, Overview.</b> Every lead's path from niche → build → human review → channel → outcome, rendered live from the backend. The dashboard opens the store read-only.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="how" class="rv">
+  <div class="wrap">
+    <div class="head">
+      <div class="k">01 · How it runs</div>
+      <div>
+        <h2>Three agents, one database, no message bus.</h2>
+        <p>Each agent is the sole writer of its own object types and can read everything else. Work queues are <b>frontier</b> queries ("upstream done, mine still open"), claimed with a timed lease. An agent can crash, restart or run twice and the pipeline resumes without duplicating a build or a message.</p>
+      </div>
+    </div>
+
+    <div class="diagram" role="img" aria-label="Architecture: Finder, Builder and Sales agents read and write a MorphDB app through a Python shim and role CLI; a read-only dashboard and a human send gate sit beside it">
+      <svg viewBox="0 0 960 336" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Mono, ui-monospace, monospace" font-size="12">
+        <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6A747C"/></marker></defs>
+        <!-- agents -->
+        <text x="632" y="18" text-anchor="middle" fill="#6A747C" font-size="10.5">Builder ⇄ Sales: revise / revised (the only peer message)</text>
+        <path d="M600 22 H664" stroke="#6A747C" stroke-dasharray="3 3" marker-end="url(#ah)" marker-start="url(#ah)"/>
+        <g>
+          <rect x="30" y="28" width="290" height="104" rx="8" fill="#F3F5F1" stroke="#D6DCD4"/>
+          <text x="46" y="52" font-family="Bricolage Grotesque, sans-serif" font-weight="700" font-size="18" fill="#12171B">Finder</text>
+          <text x="46" y="74" fill="#39434B" font-size="11">Places search · audit · qualify gate</text>
+          <text x="46" y="94" fill="#1C5A3A" font-size="11">writes business · seen_place</text>
+          <text x="46" y="112" fill="#1C5A3A" font-size="11">owns stage.find</text>
+        </g>
+        <g>
+          <rect x="335" y="28" width="290" height="104" rx="8" fill="#F3F5F1" stroke="#D6DCD4"/>
+          <text x="351" y="52" font-family="Bricolage Grotesque, sans-serif" font-weight="700" font-size="18" fill="#12171B">Builder</text>
+          <text x="351" y="74" fill="#39434B" font-size="11">static site · reviewer loop · Pages deploy</text>
+          <text x="351" y="94" fill="#1C5A3A" font-size="11">writes website · attribute · website_change</text>
+          <text x="351" y="112" fill="#1C5A3A" font-size="11">owns stage.build</text>
+        </g>
+        <g>
+          <rect x="640" y="28" width="290" height="104" rx="8" fill="#F3F5F1" stroke="#D6DCD4"/>
+          <text x="656" y="52" font-family="Bricolage Grotesque, sans-serif" font-weight="700" font-size="18" fill="#12171B">Sales</text>
+          <text x="656" y="74" fill="#39434B" font-size="11">channel · draft · cadence · reply scan</text>
+          <text x="656" y="94" fill="#1C5A3A" font-size="11">writes outreach · thread · send</text>
+          <text x="656" y="112" fill="#1C5A3A" font-size="11">owns stage.communicate</text>
+        </g>
+        <!-- arrows down to shim -->
+        <path d="M175 132 V166" stroke="#6A747C" marker-end="url(#ah)" marker-start="url(#ah)"/>
+        <path d="M480 132 V166" stroke="#6A747C" marker-end="url(#ah)" marker-start="url(#ah)"/>
+        <path d="M785 132 V166" stroke="#6A747C" marker-end="url(#ah)" marker-start="url(#ah)"/>
+        <text x="185" y="153" fill="#6A747C" font-size="10.5">bin/awb finder …</text>
+        <text x="490" y="153" fill="#6A747C" font-size="10.5">bin/awb builder …</text>
+        <text x="795" y="153" fill="#6A747C" font-size="10.5">bin/awb sales …</text>
+        <!-- shim -->
+        <rect x="30" y="168" width="900" height="40" rx="6" fill="#E2EDE5" stroke="#B9D1C1"/>
+        <text x="48" y="193" fill="#1C5A3A" font-weight="500" font-size="11.5">shim · awb_morph.py — frontiers, funnel, leases, A/B rollup, stage derivation (the JOINs MorphDB doesn't do)</text>
+        <!-- morphdb -->
+        <rect x="30" y="226" width="900" height="52" rx="8" fill="#0B0E14"/>
+        <text x="48" y="249" fill="#E6EDF3" font-family="Bricolage Grotesque, sans-serif" font-weight="700" font-size="16">MorphDB · app "awb"</text>
+        <text x="48" y="268" fill="#8B97A7" font-size="11">20 types · 16 relations · 26,531 relation edges · generic /objects endpoints · schema discovered at runtime</text>
+        <text x="912" y="249" text-anchor="end" fill="#8B97A7" font-size="10.5">SQLite · Postgres · DynamoDB</text>
+        <!-- observers -->
+        <rect x="30" y="296" width="430" height="30" rx="6" fill="#FFFFFF" stroke="#D6DCD4"/>
+        <text x="48" y="315" fill="#39434B" font-size="11">Admin dashboard · read-only · one write: review comments</text>
+        <rect x="500" y="296" width="430" height="30" rx="6" fill="#F6EBDD" stroke="#E4C9A3"/>
+        <text x="518" y="315" fill="#7A4A0C" font-size="11">Felix · send gate · every live reply · Telegram pings</text>
+        <path d="M245 296 V278" stroke="#6A747C" marker-end="url(#ah)"/>
+        <path d="M715 296 V278" stroke="#6A747C" marker-end="url(#ah)" marker-start="url(#ah)"/>
+      </svg>
+    </div>
+
+    <div class="agents">
+      <div class="agent"><h3>Finder</h3><div class="own">reads campaign · writes business</div><p>Sweeps a town through Google Places, audits each business's web presence with a real-browser fetch, and enrolls only leads that clear the campaign's binary gate. Cheapest checks run first; a lead that fails any check costs nothing downstream.</p></div>
+      <div class="agent"><h3>Builder</h3><div class="own">reads business · writes website</div><p>Turns one lead into a single-file static site with the business's own photos and reviews, deploys it to GitHub Pages, and records its levers and outcomes. A separate reviewer scores the rendered page before anything ships.</p></div>
+      <div class="agent"><h3>Sales</h3><div class="own">reads website · writes outreach</div><p>Picks the channel, writes a personalized opener around a sourced fact, runs a 3 / 6 / 12-day cadence and logs every touch. Website-change requests from owners route back to Builder as revision objects.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="backend" class="rv">
+  <div class="wrap">
+    <div class="head">
+      <div class="k">02 · Backend</div>
+      <div>
+        <h2>MorphDB: the schema moves, the agents don't.</h2>
+        <p>The backend is <a href="https://github.com/felixchenyijun/morphdb">MorphDB</a>, a schema-fluid object store I wrote and open-sourced. Agents never read a schema file. At boot they call <code>schema</code> and <code>data-dictionary</code> and adapt. When foreign keys became first-class relations, no agent prompt changed and every CLI contract stayed identical.</p>
+      </div>
+    </div>
+    <div class="grid">
+      <ul class="pts side" style="padding:0">
+        <li><b>Relations, not string keys.</b> <code>stage.business</code>, <code>thread.outreach</code>, <code>attribute.config</code>: filterable like an ORM and traversable both ways for free.</li>
+        <li><b>No JOINs, views or triggers</b> in MorphDB, so one Python shim recomputes frontiers, the funnel and A/B rollups over the generic object endpoints. A parity check proves it reproduces the old SQL views exactly.</li>
+        <li><b>One CLI per role.</b> <code>bin/awb &lt;role&gt; &lt;action&gt;</code> bundles every multi-step write, so each mutation is a named, auditable verb. 2,890 audit events so far, one flat feed.</li>
+      </ul>
+      <div>
+        <div class="shot"><img src="img/morphdb.jpg" alt="MorphDB admin: the awb app's data model graph with 20 types and their relations" loading="lazy" width="1800" height="1125"></div>
+        <div class="cap"><b>MorphDB admin, data model.</b> The <code>awb</code> app: business at the center, stages, websites, outreach threads, sends, attributes and audit events hanging off it by relation.</div>
+      </div>
+    </div>
+    <div class="two">
+      <div>
+        <div class="shot"><img src="img/shim.jpg" alt="Dashboard Shim tab: the registry of every write verb each agent can run, with arguments and descriptions" loading="lazy" width="1800" height="1062"></div>
+        <div class="cap"><b>Dashboard, Shim tab.</b> Every write verb each agent can take, read live from the CLI registry.</div>
+      </div>
+      <div class="side" style="padding-top:6px">
+        <p style="margin:0 0 12px"><b>Why a custom backend at all?</b> The data model churned weekly while the pipeline was being designed: new stages, new channels, an attribute system, campaigns as rows. A conventional schema would have meant a migration and an API change for each. MorphDB let the model be reshaped from the command line while the agents kept calling the same endpoints.</p>
+        <p style="margin:0">The same process hosts 17 isolated apps; the pipeline is one of them.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="outreach" class="rv">
+  <div class="wrap">
+    <div class="head">
+      <div class="k">03 · Outreach</div>
+      <div>
+        <h2>Real messages on real channels, behind a human gate.</h2>
+        <p>Owners of small landscaping firms answer texts, not email. Sales sends iMessage and SMS through <b>BlueBubbles</b>, a REST server on a Mac that drives Messages.app, replacing a fragile AppleScript path with JSON in, real delivery status out. Email is staged as an Apple Mail draft with a phone-viewport screenshot of the preview site. Either way the draft is written to the database first, then I review and send.</p>
+      </div>
+    </div>
+    <div class="grid">
+      <ul class="pts side" style="padding:0">
+        <li><b>919 messages sent:</b> 374 iMessage, 323 email, 222 SMS. CAN-SPAM by construction: physical address, opt-outs honored permanently, a send ramp from 8 to 50 per day.</li>
+        <li><b>Replies are read back</b> from Messages' local database and Gmail. A reply flips the lead to <em>negotiating</em> and pings my phone on Telegram; I take every live thread myself.</li>
+        <li><b>Delivery is verified, not assumed.</b> SMS silently drops attachments on some carriers, and iMessage capability flips between touches, so both are re-checked per send and re-read minutes later.</li>
+      </ul>
+      <div>
+        <div class="shot"><img src="img/sales.jpg" alt="Dashboard Sales tab: drafts to send, contacted, awaiting reply, replied, deals won, and the follow-up frontier table" loading="lazy" width="1800" height="841"></div>
+        <div class="cap"><b>Dashboard, Sales internal.</b> The follow-up frontier: contacted, no deal yet, sorted by next touch due.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="campaigns" class="rv">
+  <div class="wrap">
+    <div class="head">
+      <div class="k">04 · Campaigns</div>
+      <div>
+        <h2>A campaign is a row, not code.</h2>
+        <p>Niche, geography, a binary qualify gate, cost discipline, contact-mining rules and angle guidance all live on one <code>campaign</code> object the Finder reads at boot. Four campaigns so far, from a small-town landscaper "gold-mine" gate to a national landscaping sweep biased to FL, CA, NY and AZ. Every verdict is stamped with the gate version that produced it, so old decisions stay explainable.</p>
+      </div>
+    </div>
+    <div class="grid">
+      <ul class="pts side" style="padding:0">
+        <li><b>Credibility anchor.</b> Each pitch opens with one fact you could only know by looking at that business, recorded with its source. Unsourced is treated as fabricated and blocks the lead.</li>
+        <li><b>A/B by design.</b> <code>opener_style</code> (identity-first vs observation-first) and <code>msg_length</code> are assigned per lead per channel by a deterministic hash and rolled up with <code>ab-stats</code>.</li>
+        <li><b>Cheap before expensive.</b> Dedup by place ID before any fetch, then a once-per-town climate lookup that also picks the site template for every lead in that town.</li>
+      </ul>
+      <div>
+        <div class="shot"><img src="img/finder.jpg" alt="Dashboard Finder tab: a dark map of the United States covered in scan circles, 3,068 towns swept, with category filters below" loading="lazy" width="1800" height="1106"></div>
+        <div class="cap"><b>Dashboard, Finder internal.</b> 3,068 towns swept; circle = scan radius, color = category, brighter = more leads enrolled.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tuning" class="rv">
+  <div class="wrap">
+    <div class="head">
+      <div class="k">05 · Self-optimization</div>
+      <div>
+        <h2>The agents declare the fields they want to optimize.</h2>
+        <p>Two loops. The <b>fast loop</b> tunes parameters: any agent can declare a new lever at runtime with <code>attr-config</code> (build model, reasoning effort, harness; business size, neighborhood, income), record it on every build beside the outcomes (quality score, tokens, minutes), and a clean-context auditor scores each arm blind. The <b>slow loop</b> tunes the prose: a <code>tune</code> workflow runs the real pipeline, has an adversary agent score the output and name defects in the agents' own instruction files, then an improve agent edits those files, converging on a quality bar.</p>
+      </div>
+    </div>
+    <div class="grid">
+      <ul class="pts side" style="padding:0">
+        <li><b>363 measured builds,</b> median quality 87 / 100, median 31 minutes. The review protocol moved quality about 21 rubric points; model choice moved it about 8. The cost lever is cheaper reviewers, not cheaper builders.</li>
+        <li><b>Self-scores ran 4 to 30 points optimistic,</b> so no agent grades its own work: a separate evaluator with a clean context scores the rendered page against a rubric a human can edit.</li>
+        <li><b>One experiment at a time,</b> pre-registered with its metric and decision rule, paired within a wave. Freestyle toggling produces anecdotes, not answers.</li>
+      </ul>
+      <div>
+        <div class="shot"><img src="img/builder.jpg" alt="Dashboard Builder tab: build economics with sites measured, median quality, tokens and minutes, and a per-site table of model, effort, harness, tokens and quality" loading="lazy" width="1800" height="806"></div>
+        <div class="cap"><b>Dashboard, Builder internals.</b> Levers (model, effort, harness) beside outcomes (tokens, minutes, quality) per build.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="hard" class="rv">
+  <div class="wrap">
+    <div class="head">
+      <div class="k">06 · Hard problems</div>
+      <div><h2>What was actually difficult.</h2></div>
+    </div>
+    <dl class="hard">
+      <div class="row"><dt>Fabrication</dt><dd>Language models invent plausible phone numbers, review counts and history. Every on-page and in-pitch fact must trace to a database row with a source, and a separate reviewer inspects the rendered pixels, not the builder's intent. A daily read-only reviewer re-verifies sent claims and logs any that drifted.</dd></div>
+      <div class="row"><dt>Coordination without messages</dt><dd>Frontier queries, timed leases with automatic healing, and idempotent upserts keyed by a content hash. A lost message never loses work, and three long-lived agents never need to be online at once.</dd></div>
+      <div class="row"><dt>A backend that can't JOIN</dt><dd>All relational logic lives in one shim and is verified against the old SQL views, so the schema stays free to change while the frontier semantics stay exact.</dd></div>
+      <div class="row"><dt>Deliverability</dt><dd>Carrier SMS degrades three different ways; iMessage is clean but its availability per number is not stable. Capability is checked per send, and delivery is re-read from the source of truth rather than trusted from the API response.</dd></div>
+      <div class="row"><dt>Throughput ceilings</dt><dd>Builds are memory- and quota-bound at roughly ten per hour; unclosed browser sessions once filled the disk in an hour. Two or three agents with review immediately after each build beat wide fan-outs.</dd></div>
+      <div class="row"><dt>Trust</dt><dd>The dashboard opens the store read-only with exactly one write, my review comments, so observing the system never perturbs it. Only sending and replying are human.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section id="shipped" class="rv">
+  <div class="wrap">
+    <div class="head">
+      <div class="k">07 · What shipped</div>
+      <div>
+        <h2>Three paying clients on their own domains.</h2>
+        <p>Each moved from a GitHub Pages preview to the client's domain on Cloudflare Pages, with call and text click tracking (a Worker writing to D1), a monthly plain-English value report, and a Stripe subscription.</p>
+      </div>
+    </div>
+    <div class="clients">
+      <a class="client" href="https://xlawncare.com/"><div class="im"><img src="img/site-xlawncare.jpg" alt="X Lawn Care website hero" loading="lazy" width="1440" height="900"></div><div class="t"><b>X Lawn Care</b><span>xlawncare.com · Newberry, SC</span><em>Closed on a phone call. The format that produced the pipeline's strongest buying signal: benefit-led headings, call-or-text buttons, no forms.</em></div></a>
+      <a class="client" href="https://semo-lawn-care.com/"><div class="im"><img src="img/site-semo.jpg" alt="SEMO Lawn Care website hero" loading="lazy" width="1440" height="900"></div><div class="t"><b>SEMO Lawn Care</b><span>semo-lawn-care.com · Sikeston, MO</span><em>Found, built and pitched by the agents; the owner's first reply asked what it would cost. Closed by email, eight site versions since.</em></div></a>
+      <a class="client" href="https://rendonphotography.com/"><div class="im"><img src="img/site-rendon.jpg" alt="Rendon Photography website hero" loading="lazy" width="1440" height="900"></div><div class="t"><b>Rendon Photography</b><span>rendonphotography.com · Newberry, SC</span><em>Client-supplied photos, a gallery with lightbox, seven versions as the owner's feedback came in.</em></div></a>
+    </div>
+    <div class="callout"><b>1,580 preview sites are live right now.</b> <a href="https://felixchenyijun.github.io/websites/directory/">Browse the directory ↗</a> or open one at random, for example <a href="https://falconwebstudio.com/websites/pristine-lawns-beachwood/">pristine-lawns-beachwood ↗</a>. Each was built, machine-reviewed and deployed by the agents; I spot-check a site before it is pitched.</div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <div style="font-family:var(--display);font-weight:700;font-size:18px">Felix Chen</div>
+      <nav style="margin-top:8px">
+        <a href="https://www.linkedin.com/in/felix-d-chen">LinkedIn</a>
+        <a href="https://github.com/felixchenyijun">GitHub</a>
+        <a href="https://github.com/felixchenyijun/morphdb">MorphDB (open source)</a>
+        <a href="https://morphdb.pages.dev">MorphDB explainer</a>
+      </nav>
+    </div>
+    <div class="stack">Python · MorphDB · Claude Code agents &amp; skills · Playwright · BlueBubbles · Apple Mail · Google Places API · GitHub Pages · Cloudflare Workers, Pages &amp; D1 · Stripe · Telegram bot<br>Numbers on this page were read from the pipeline's database on 21 Sep 2026.</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  if(!('IntersectionObserver' in window)||matchMedia('(prefers-reduced-motion: reduce)').matches){document.querySelectorAll('.rv').forEach(function(e){e.classList.add('in')});return}
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.rv').forEach(function(e){io.observe(e)});
+})();
+</script>
+</body>
+</html>
